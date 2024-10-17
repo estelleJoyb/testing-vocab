@@ -7,7 +7,11 @@ const path = require("path");
 
 app.use(cors());
 app.use(express.json());
-
+app.use(
+  cors({
+    origin: "https://testing-vocab.onrender.com/", // Remplace <ton-utilisateur> par ton identifiant GitHub
+  })
+);
 const excelFilePath = path.join(__dirname, "vocabulaire.xlsx");
 
 app.use(express.static(path.join(__dirname, "public")));
