@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test de vocabulaire</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Traduisez le mot</h1>
+      <p id="word">Chargement...</p>
+      <input
+        type="text"
+        id="translationInput"
+        placeholder="Votre traduction..."
+      />
+      <button onclick="checkTranslation()">Vérifier</button>
+      <div class="result" id="result"></div>
+    </div>
+
+    <script>
+      let currentWord = "";
+
+      async function getWord() {
+        const response = await fetch("http://localhost:3000/words");
+        const data = await response.json();
+        currentWord = data.word;
+        document.getElementById("word").innerText = currentWord;
+      }
+
+      async function checkTranslation() {
+        const userTraduction =
+          document.getElementById("translationInput").value;
+        const response = await fetch("http://localhost:3000/check", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            word: currentWord,
+            userTraduction: userTraduction,
+          }),
+        });
+
+        const data = await response.json();
+        const resultDiv = document.getElementById("result");
+
+        if (data.correct) {
+          resultDiv.innerHTML = `<span style="color:green">Correct ! ${currentWord} =  ${data.correctTraduction}</span>`;
+        } else {
+          resultDiv.innerHTML = `<span style="color:red">Incorrect. ${currentWord} = ${data.correctTraduction}</span>`;
+        }
+
+        document.getElementById("translationInput").value = "";
+        getWord();
+      }
+
+      getWord();
+    </script>
+  </body>
+</html>
